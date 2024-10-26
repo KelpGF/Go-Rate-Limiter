@@ -1,0 +1,5 @@
+FROM golang:1.23
+
+WORKDIR /app
+
+CMD ["tail", "-f", "/dev/null"]
