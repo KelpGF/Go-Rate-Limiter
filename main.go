@@ -13,22 +13,31 @@ import (
 func main() {
 	configs := configs.LoadConfig(".")
 
-	redis := infra.NewRedis(&redis.Options{
-		Addr: configs.RedisHost + ":" + configs.RedisPort,
-	})
-	rateLimiterItemRedisRepository := infra.NewRateLimiterItemRedisRepository(redis)
-	rateLimiterService := rate_limiter.NewRateLimiterServiceImpl(rateLimiterItemRedisRepository)
+	rateLimiterService := rate_limiter.NewRateLimiterServiceImpl(nil)
 
-	rateLimiterService.SetConfig("ip", rate_limiter.RateLimiterConfig{
-		LimitPerInterval:  configs.RateLimitDefaultRequestCountPerSeconds,
+	var rateLimiterItemRepositor rate_limiter.RateLimiterItemRepository
+
+	if configs.DB_DRIVER == "in_memory" {
+		rateLimiterItemRepositor = rate_limiter.NewRateLimiterItemRepositoryMemory()
+	} else if configs.DB_DRIVER == "redis" {
+		redis := infra.NewRedis(&redis.Options{
+			Addr: configs.RedisHost + ":" + configs.RedisPort,
+		})
+		rateLimiterItemRepositor = infra.NewRateLimiterItemRedisRepository(redis)
+	}
+
+	rateLimiterService.SetRateLimiterItemRepository(rateLimiterItemRepositor)
+
+	rateLimiterService.AddConfig("ip", rate_limiter.RateLimiterConfig{
+		LimitPerInterval:  configs.RateLimitDefaultLimitOfRequestsPerInterval,
 		IntervalInSeconds: configs.RateLimitDefaultIntervalInSeconds,
-		BanTimeInSeconds:  configs.RateLimitDefaultBanTimePerSeconds,
+		BanTimeInSeconds:  configs.RateLimitDefaultBanTimeInSeconds,
 	})
 
-	rateLimiterService.SetConfig("token", rate_limiter.RateLimiterConfig{
-		LimitPerInterval:  configs.RateLimitDefaultTokenCountPerInterval,
+	rateLimiterService.AddConfig("token", rate_limiter.RateLimiterConfig{
+		LimitPerInterval:  configs.RateLimitDefaultTokenLimitOfRequestsPerInterval,
 		IntervalInSeconds: configs.RateLimitDefaultTokenIntervalInSeconds,
-		BanTimeInSeconds:  configs.RateLimitDefaultTokenBanTimePerSeconds,
+		BanTimeInSeconds:  configs.RateLimitDefaultTokenBanTimeInSeconds,
 	})
 
 	rateLimiterMiddleware := middlewares.NewRateLimiterMiddleware(rateLimiterService, configs.RateLimitToken)

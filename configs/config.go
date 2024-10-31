@@ -5,13 +5,13 @@ import (
 )
 
 type configType struct {
-	RateLimitDefaultIntervalInSeconds      int `mapstructure:"RATE_LIMIT_DEFAULT_INTERVAL_IN_SECONDS"`
-	RateLimitDefaultRequestCountPerSeconds int `mapstructure:"RATE_LIMIT_DEFAULT_REQUEST_COUNT_PER_SECONDS"`
-	RateLimitDefaultBanTimePerSeconds      int `mapstructure:"RATE_LIMIT_DEFAULT_REQUEST_BAN_TIME_PER_SECONDS"`
+	RateLimitDefaultIntervalInSeconds          int `mapstructure:"RATE_LIMIT_DEFAULT_INTERVAL_IN_SECONDS"`
+	RateLimitDefaultLimitOfRequestsPerInterval int `mapstructure:"RATE_LIMIT_DEFAULT_LIMIT_OF_REQUEST_PER_INTERVAL"`
+	RateLimitDefaultBanTimeInSeconds           int `mapstructure:"RATE_LIMIT_DEFAULT_REQUEST_BAN_TIME_IN_SECONDS"`
 
-	RateLimitDefaultTokenIntervalInSeconds int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_INTERVAL_IN_SECONDS"`
-	RateLimitDefaultTokenCountPerInterval  int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_REQUEST_COUNT_PER_SECONDS"`
-	RateLimitDefaultTokenBanTimePerSeconds int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_BAN_TIME_PER_SECONDS"`
+	RateLimitDefaultTokenIntervalInSeconds          int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_INTERVAL_IN_SECONDS"`
+	RateLimitDefaultTokenLimitOfRequestsPerInterval int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_LIMIT_OF_REQUEST_PER_INTERVAL"`
+	RateLimitDefaultTokenBanTimeInSeconds           int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_BAN_TIME_IN_SECONDS"`
 
 	RateLimitToken string `mapstructure:"RATE_LIMIT_TOKEN"`
 
@@ -20,6 +20,8 @@ type configType struct {
 
 	RedisHost string `mapstructure:"REDIS_HOST"`
 	RedisPort string `mapstructure:"REDIS_PORT"`
+
+	DB_DRIVER string `mapstructure:"DB_DRIVER"`
 }
 
 func LoadConfig(path string) *configType {
@@ -47,6 +49,10 @@ func LoadConfig(path string) *configType {
 
 	if configs.RedisPort == "" {
 		configs.RedisPort = "6379"
+	}
+
+	if configs.DB_DRIVER == "" {
+		configs.DB_DRIVER = "in_memory"
 	}
 
 	return configs

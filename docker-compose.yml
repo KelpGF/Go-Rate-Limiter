@@ -4,11 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     container_name: go-rate-limiter
+    entrypoint: sh ./.docker/entrypoint.dev.sh
     working_dir: /app
     volumes:
       - .:/app
     ports:
-      - 3000:3000
+      - 8080:8080
     networks:
       - go-rate-limiter
     depends_on:

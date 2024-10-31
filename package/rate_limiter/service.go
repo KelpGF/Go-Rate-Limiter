@@ -21,7 +21,7 @@ type RateLimiterItem struct {
 type RateLimiterService interface {
 	Execute(itemKey, configType string) bool
 	GetConfig(name string) RateLimiterConfig
-	SetConfig(configType string, config RateLimiterConfig)
+	AddConfig(configType string, config RateLimiterConfig)
 }
 
 type RateLimiterServiceImpl struct {
@@ -36,10 +36,17 @@ func NewRateLimiterServiceImpl(rateLimiterItemRepository RateLimiterItemReposito
 	}
 }
 
+func (r *RateLimiterServiceImpl) SetRateLimiterItemRepository(rateLimiterItemRepository RateLimiterItemRepository) {
+	r.rateLimiterItemRepository = rateLimiterItemRepository
+}
+
 func (r *RateLimiterServiceImpl) Execute(itemKey, configType string) bool {
 	config := r.GetConfig(configType)
+	fmt.Printf("\n\nExecuting item %s with config %s \n", itemKey, configType)
+	fmt.Println("Config:", config)
 
 	timeNow := time.Now()
+	fmt.Println("Time now:", timeNow)
 
 	item := r.rateLimiterItemRepository.Find(itemKey)
 	if item == nil {
@@ -80,6 +87,6 @@ func (r *RateLimiterServiceImpl) GetConfig(name string) RateLimiterConfig {
 	return r.configs[name]
 }
 
-func (r *RateLimiterServiceImpl) SetConfig(configType string, config RateLimiterConfig) {
+func (r *RateLimiterServiceImpl) AddConfig(configType string, config RateLimiterConfig) {
 	r.configs[configType] = config
 }

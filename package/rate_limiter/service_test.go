@@ -26,7 +26,7 @@ func (s *RateLimiterServiceImplTestSuite) SetupTest() {
 }
 
 func (s *RateLimiterServiceImplTestSuite) TestConfig() {
-	s.sut.SetConfig("ip", s.ipConfig)
+	s.sut.AddConfig("ip", s.ipConfig)
 
 	config := s.sut.GetConfig("ip")
 
@@ -34,7 +34,7 @@ func (s *RateLimiterServiceImplTestSuite) TestConfig() {
 }
 
 func (s *RateLimiterServiceImplTestSuite) TestExecute() {
-	s.sut.SetConfig("ip", s.ipConfig)
+	s.sut.AddConfig("ip", s.ipConfig)
 	key := "any-key"
 	configType := "ip"
 
