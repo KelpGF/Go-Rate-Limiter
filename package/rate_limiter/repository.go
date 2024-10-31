@@ -1,4 +1,4 @@
-package ratelimiter
+package rate_limiter
 
 type RateLimiterItemRepository interface {
 	Find(key string) *RateLimiterItem

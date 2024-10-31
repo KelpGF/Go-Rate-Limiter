@@ -9,7 +9,9 @@ type configType struct {
 	RateLimitDefaultRequestCountPerSeconds int `mapstructure:"RATE_LIMIT_DEFAULT_REQUEST_COUNT_PER_SECONDS"`
 
 	RateLimitDefaultTokenIntervalInSeconds int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_INTERVAL_IN_SECONDS"`
-	RateLimitDefaultTokenCountPerInterval  int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_COUNT_PER_INTERVAL"`
+	RateLimitDefaultTokenCountPerInterval  int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_REQUEST_COUNT_PER_SECONDS"`
+
+	RateLimitToken string `mapstructure:"RATE_LIMIT_TOKEN"`
 
 	WebServerHost string `mapstructure:"WEB_SERVER_HOST"`
 	WebServerPort string `mapstructure:"WEB_SERVER_PORT"`
