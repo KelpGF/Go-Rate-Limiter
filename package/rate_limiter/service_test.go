@@ -20,6 +20,7 @@ func (s *RateLimiterServiceImplTestSuite) SetupTest() {
 	s.ipConfig = RateLimiterConfig{
 		LimitPerInterval:  3,
 		IntervalInSeconds: 2,
+		BanTimeInSeconds:  2,
 	}
 	s.sut = NewRateLimiterServiceImpl(s.rateLimiterItemRepositoryStub)
 }
@@ -42,8 +43,9 @@ func (s *RateLimiterServiceImplTestSuite) TestExecute() {
 	}
 
 	s.False(s.sut.Execute(key, configType))
+	s.False(s.sut.Execute(key, configType))
 
-	time.Sleep(time.Duration(s.ipConfig.IntervalInSeconds) * time.Second)
+	time.Sleep(time.Duration(s.ipConfig.BanTimeInSeconds) * time.Second)
 
 	s.True(s.sut.Execute(key, configType))
 }

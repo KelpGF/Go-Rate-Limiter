@@ -7,14 +7,19 @@ import (
 type configType struct {
 	RateLimitDefaultIntervalInSeconds      int `mapstructure:"RATE_LIMIT_DEFAULT_INTERVAL_IN_SECONDS"`
 	RateLimitDefaultRequestCountPerSeconds int `mapstructure:"RATE_LIMIT_DEFAULT_REQUEST_COUNT_PER_SECONDS"`
+	RateLimitDefaultBanTimePerSeconds      int `mapstructure:"RATE_LIMIT_DEFAULT_REQUEST_BAN_TIME_PER_SECONDS"`
 
 	RateLimitDefaultTokenIntervalInSeconds int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_INTERVAL_IN_SECONDS"`
 	RateLimitDefaultTokenCountPerInterval  int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_REQUEST_COUNT_PER_SECONDS"`
+	RateLimitDefaultTokenBanTimePerSeconds int `mapstructure:"RATE_LIMIT_DEFAULT_TOKEN_BAN_TIME_PER_SECONDS"`
 
 	RateLimitToken string `mapstructure:"RATE_LIMIT_TOKEN"`
 
 	WebServerHost string `mapstructure:"WEB_SERVER_HOST"`
 	WebServerPort string `mapstructure:"WEB_SERVER_PORT"`
+
+	RedisHost string `mapstructure:"REDIS_HOST"`
+	RedisPort string `mapstructure:"REDIS_PORT"`
 }
 
 func LoadConfig(path string) *configType {
@@ -38,6 +43,10 @@ func LoadConfig(path string) *configType {
 
 	if configs.WebServerPort == "" {
 		configs.WebServerPort = "3000"
+	}
+
+	if configs.RedisPort == "" {
+		configs.RedisPort = "6379"
 	}
 
 	return configs

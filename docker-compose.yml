@@ -9,3 +9,19 @@ services:
       - .:/app
     ports:
       - 3000:3000
+    networks:
+      - go-rate-limiter
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: go-rate-limiter-redis
+    ports:
+      - 6379:6379
+    networks:
+      - go-rate-limiter
+
+networks:
+  go-rate-limiter:
+    driver: bridge

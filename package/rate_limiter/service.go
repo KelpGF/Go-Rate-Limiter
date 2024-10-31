@@ -1,16 +1,21 @@
 package rate_limiter
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 type RateLimiterConfig struct {
 	LimitPerInterval  int
 	IntervalInSeconds int
+	BanTimeInSeconds  int
 }
 
 type RateLimiterItem struct {
 	Key             string
 	LastRequestDate time.Time
 	RequestsCount   int
+	BannedUntil     time.Time
 }
 
 type RateLimiterService interface {
@@ -34,22 +39,39 @@ func NewRateLimiterServiceImpl(rateLimiterItemRepository RateLimiterItemReposito
 func (r *RateLimiterServiceImpl) Execute(itemKey, configType string) bool {
 	config := r.GetConfig(configType)
 
+	timeNow := time.Now()
+
 	item := r.rateLimiterItemRepository.Find(itemKey)
 	if item == nil {
+		fmt.Println("Creating new item")
 		item = &RateLimiterItem{
 			Key:             itemKey,
-			LastRequestDate: time.Now(),
+			LastRequestDate: timeNow,
 			RequestsCount:   0,
 		}
 	}
 
+	isBanned := item.BannedUntil.After(timeNow)
+	if isBanned {
+		fmt.Printf("Item is banned: count %d \n", item.RequestsCount)
+		return false
+	}
+
 	if time.Since(item.LastRequestDate).Seconds() > float64(config.IntervalInSeconds) {
+		fmt.Println("Resetting requests count")
 		item.RequestsCount = 0
-		item.LastRequestDate = time.Now()
+		item.LastRequestDate = timeNow
 	}
 
 	item.RequestsCount++
+
+	if item.RequestsCount > config.LimitPerInterval {
+		fmt.Printf("Banning item. count %d. limit %d \n", item.RequestsCount, config.LimitPerInterval)
+		item.BannedUntil = timeNow.Add(time.Duration(config.BanTimeInSeconds) * time.Second)
+	}
+
 	r.rateLimiterItemRepository.Save(item)
+	fmt.Printf("Saving item. count %d. limit %d \n", item.RequestsCount, config.LimitPerInterval)
 
 	return item.RequestsCount <= config.LimitPerInterval
 }
