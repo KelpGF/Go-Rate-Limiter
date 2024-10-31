@@ -51,13 +51,7 @@ func (r *RateLimiterServiceImpl) Execute(itemKey, configType string) bool {
 	item.RequestsCount++
 	r.rateLimiterItemRepository.Save(item)
 
-	if item.RequestsCount > config.LimitPerInterval {
-		// salvar request no REDIS como erro
-		return false
-	}
-
-	// salvar request no REDIS
-	return true
+	return item.RequestsCount <= config.LimitPerInterval
 }
 
 func (r *RateLimiterServiceImpl) GetConfig(name string) RateLimiterConfig {
